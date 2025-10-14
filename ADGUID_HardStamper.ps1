@@ -56,20 +56,27 @@ $switchcasemessage = @"
 *                                                                        *
 *                                 |||                                    *
 *                          [ADDITIONAL INFO]                             *
-* The CSV file includes multiple columns, but we need only two:          *
-* The SamAccountName and the UPN afterwards.                             *
+* The CSV file includes multiple columns, but we need only three:        *
+* The SamAccountName, the UserPrincipalName and the Name.                *
 * SamAccountName is needed to get the UUID/GUID/UserImmutableID that can *
-* be acquired also from Porta.Azure.com > Microsoft Entra ID > Microsoft *
+* be acquired also from Portal.Azure.com > Microsoft Entra ID > Microsoft*
 * Entra Connect > Connect Sync > Microsoft Connect Entra Health > Sync   *
 * Errors. On this step, we are specifically targetting the UUID of the   *
-* On-Premise AD user.                                                    *
-* On next step, we will need "hardstamp" it on the Azure AD user via     *
-* Update-MgUser -UserId [UPN] -OnPremisesImmutableId [UUID] command      *
-* Therefore, for this to work, we need PS Admin session on On-Premise    *
-* and a Global Administrator account on Azure AD.                        *
+* On-Premise AD user (can seen on Source Anchor row).                    *
+*                                                                        *
+* Afterwards, we'll need "hardstamp" it on the Azure AD user via         *
+* >>Update-MgUser -UserId [UPN] -OnPremisesImmutableId [UUID] command    *
+* Therefore, for the script to function properly, you will need PS Admin *
+* session on On-Premises AD and a Global Administrator account on Azure. *
+*                                                                        *
+* The column names are declared and called AS IS in the CSV file.        *
+* Therefore, the script is designed with RUN AS IS in mind and should    *
+* function properly with no additional edits.                            *
 *                                                                        *
 * IMPORTANT: The code will be applied EXCLUSIVELY to users who's UPN     *
 * contains the domain that will be prompted further.                     *
+* Therefore, if you enter sakurada.lan as your domain, the update-mguser *
+* will be ran ONLY on *@sakurada.lan users.                              *
 **************************************************************************
 Input: 
 "@
@@ -152,10 +159,10 @@ $aadusernotfoundlist = @"
 *LIST:
 
 "@
-$lanuserlist = @"
-**************************************
-*        USERS ARE .LAN (AD):        *
-**************************************
+$otherdomainuserlist = @"
+*************************************************
+*        USERS ARE IN OTHER DOMAIN (AD):        *
+*************************************************
 *LIST:
 
 "@
@@ -213,9 +220,9 @@ if ($safehouse -eq "yes") {
                 Write-Host $okmessage -ForegroundColor Green
                 Write-Output "======================="
            }
-        } elseif ($_.UserPrincipalName -like "*.lan") {
+        } elseif ($_.UserPrincipalName -notlike "*$domainvariable") {
             $UPN = $_.UserPrincipalName
-            $lanuserlist = $lanuserlist + " $UPN `n"
+            $otherdomainuserlist = $otherdomainuserlist + " $UPN `n"
         }
     }
 } else {
@@ -224,7 +231,7 @@ if ($safehouse -eq "yes") {
 
 Write-Host $adusernotfoundlist -ForegroundColor Red
 Write-Host $aadusernotfoundlist -ForegroundColor Red
-Write-Host $lanuserlist -ForegroundColor Magenta
+Write-Host $otherdomainuserlist -ForegroundColor Red
 
 #STOPPING THE TRANSCRIPT
 Write-Host " "
