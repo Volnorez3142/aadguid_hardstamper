@@ -228,7 +228,9 @@ if ($safehouse -eq "yes") {
 } 
 
 Write-Host $adusernotfoundlist -ForegroundColor Red
+Write-Output " "
 Write-Host $aadusernotfoundlist -ForegroundColor Red
+Write-Output " "
 Write-Host $otherdomainuserlist -ForegroundColor Red
 
 #STOPPING THE TRANSCRIPT
@@ -245,4 +247,5 @@ ___.           ________  ____   _____ ________
        END OF SCRIPT. PRESS ENTER TO EXIT.       
    THE TRANSCRIPT CAN BE FOUND ON THE DESKTOP.  
                         "
+
 
