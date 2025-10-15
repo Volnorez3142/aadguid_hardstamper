@@ -180,9 +180,7 @@ if ($safehouse -eq "yes") {
             }
             
             if ($error) {
-                Write-Output " "
                 Write-Host $user404Errormessage $_.SamAccountName -ForegroundColor Red
-                Write-Output "======================="
                 $adusernotfoundlist = $adusernotfoundlist + " $_.SamAccountName `n"
             } elseif (!$error) {
                 $User = Get-ADUser -Identity $_.SamAccountName -Properties ObjectGUID
@@ -210,7 +208,6 @@ if ($safehouse -eq "yes") {
                     $varupnError = $_.UserPrincipalName
                     Write-Output " "
                     Write-Host $user404Errormessage $varupnError -ForegroundColor Red
-                    Write-Output "======================="
                     $aadusernotfoundlist = $aadusernotfoundlist + " $varupnError `n"
                 } elseif (!$error) {
                     Update-MgUser -UserId $_.UserPrincipalName -OnPremisesImmutableId $Base64
@@ -219,6 +216,7 @@ if ($safehouse -eq "yes") {
 
                 Write-Host $okmessage -ForegroundColor Green
                 Write-Output "======================="
+                Write-Output " "
            }
         } elseif ($_.UserPrincipalName -notlike "*$domainvariable") {
             $UPN = $_.UserPrincipalName
@@ -247,3 +245,4 @@ ___.           ________  ____   _____ ________
        END OF SCRIPT. PRESS ENTER TO EXIT.       
    THE TRANSCRIPT CAN BE FOUND ON THE DESKTOP.  
                         "
+
