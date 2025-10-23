@@ -184,9 +184,8 @@ if ($safehouse -eq "yes") {
                 $adusernotfoundlist = $adusernotfoundlist + " $_.SamAccountName `n"
             } elseif (!$error) {
                 $User = Get-ADUser -Identity $_.SamAccountName -Properties ObjectGUID
-                $GuidObject = [GUID]$User.'ObjectGUID'
-                $GuidString = $GuidObject.Guid
-                $Base64 = [Convert]::ToBase64String(([Guid]$GuidString).ToByteArray())
+                $GuidString = $User.ObjectGUID.Guid
+                $Base64 = [Convert]::ToBase64String(($User.ObjectGUID).ToByteArray())
 
                 $Name = $_.Name
                 $SamAccName = $_.SamAccountName
@@ -212,9 +211,9 @@ if ($safehouse -eq "yes") {
                 } elseif (!$error) {
                     Update-MgUser -UserId $_.UserPrincipalName -OnPremisesImmutableId $Base64
                     Write-Host "Hardstamping $Base64 to $UPN" -ForegroundColor Green
+                    Write-Host $okmessage -ForegroundColor Green
                 }
 
-                Write-Host $okmessage -ForegroundColor Green
                 Write-Output "======================="
                 Write-Output " "
            }
@@ -247,5 +246,4 @@ ___.           ________  ____   _____ ________
        END OF SCRIPT. PRESS ENTER TO EXIT.       
    THE TRANSCRIPT CAN BE FOUND ON THE DESKTOP.  
                         "
-
 
