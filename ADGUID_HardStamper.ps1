@@ -181,36 +181,35 @@ if ($safehouse -eq "yes") {
             
             if ($error) {
                 Write-Host $user404Errormessage $_.SamAccountName -ForegroundColor Red
-                $adusernotfoundlist = $adusernotfoundlist + " $_.SamAccountName `n"
+                $adusernotfoundlist = $adusernotfoundlist + " $($_.SamAccountName) `n"
+                $error.clear()
             } elseif (!$error) {
-                $User = Get-ADUser -Identity $_.SamAccountName -Properties ObjectGUID
-                $GuidString = $User.ObjectGUID.Guid
+                $User = Get-ADUser -Identity $_.SamAccountName -Properties ObjectGUID,SamAccountName
                 $Base64 = [Convert]::ToBase64String(($User.ObjectGUID).ToByteArray())
 
-                $Name = $_.Name
-                $SamAccName = $_.SamAccountName
-                $UPN = $_.UserPrincipalName
+                #$Name = $_.Name
+                #$SamAccName = $_.SamAccountName
+                #$UPN = $_.UserPrincipalName
 
-                Write-Host "User:           $Name" -ForegroundColor Blue
-                Write-Host "SamAccountName: $SamAccName" -ForegroundColor Cyan
-                Write-Host "GUID string:    $GuidString" -ForegroundColor Magenta
+                Write-Host "User:           $($User.Name)" -ForegroundColor Blue
+                Write-Host "SamAccountName: $($User.SamAccountName)" -ForegroundColor Cyan
+                Write-Host "GUID string:    $($User.ObjectGUID)" -ForegroundColor Magenta
                 Write-Host "Base64 convert: $Base64" -ForegroundColor DarkGreen
                 
-                $error.clear()
                 Try {
-                    $varupn = Get-MgUser -UserId $_.UserPrincipalName
+                    $varmguser = Get-MgUser -UserId $_.UserPrincipalName
                 } catch {
                     #Catch function doesn't inherit from global environment so we gotta do an extra ifelse below
                 }
                 
                 if ($error) {
-                    $varupnError = $_.UserPrincipalName
+                    #$varupnError = $_.UserPrincipalName
                     Write-Output " "
-                    Write-Host $user404Errormessage $varupnError -ForegroundColor Red
-                    $aadusernotfoundlist = $aadusernotfoundlist + " $varupnError `n"
+                    Write-Host $user404Errormessage $_.UserPrincipalName -ForegroundColor Cyan
+                    $aadusernotfoundlist = $aadusernotfoundlist + " $($_.UserPrincipalName) `n"
                 } elseif (!$error) {
                     Update-MgUser -UserId $_.UserPrincipalName -OnPremisesImmutableId $Base64
-                    Write-Host "Hardstamping $Base64 to $UPN" -ForegroundColor Green
+                    Write-Host "Hardstamping $Base64 to $($User.UserPrincipalName)" -ForegroundColor Green
                     Write-Host $okmessage -ForegroundColor Green
                 }
 
@@ -218,8 +217,9 @@ if ($safehouse -eq "yes") {
                 Write-Output " "
            }
         } elseif ($_.UserPrincipalName -notlike "*$domainvariable") {
-            $UPN = $_.UserPrincipalName
-            $otherdomainuserlist = $otherdomainuserlist + " $UPN `n"
+            $otherdomainuserlist = $otherdomainuserlist + "$($_.UserPrincipalName) `n"
+            Write-Output "======================="
+            Write-Output " "
         }
     }
 } else {
