@@ -186,11 +186,6 @@ if ($safehouse -eq "yes") {
             } elseif (!$error) {
                 $User = Get-ADUser -Identity $_.SamAccountName -Properties ObjectGUID,SamAccountName
                 $Base64 = [Convert]::ToBase64String(($User.ObjectGUID).ToByteArray())
-
-                #$Name = $_.Name
-                #$SamAccName = $_.SamAccountName
-                #$UPN = $_.UserPrincipalName
-
                 Write-Host "User:           $($User.Name)" -ForegroundColor Blue
                 Write-Host "SamAccountName: $($User.SamAccountName)" -ForegroundColor Cyan
                 Write-Host "GUID string:    $($User.ObjectGUID)" -ForegroundColor Magenta
@@ -203,7 +198,6 @@ if ($safehouse -eq "yes") {
                 }
                 
                 if ($error) {
-                    #$varupnError = $_.UserPrincipalName
                     Write-Output " "
                     Write-Host $user404Errormessage $_.UserPrincipalName -ForegroundColor Cyan
                     $aadusernotfoundlist = $aadusernotfoundlist + " $($_.UserPrincipalName) `n"
@@ -246,4 +240,5 @@ ___.           ________  ____   _____ ________
        END OF SCRIPT. PRESS ENTER TO EXIT.       
    THE TRANSCRIPT CAN BE FOUND ON THE DESKTOP.  
                         "
+
 
